@@ -1,0 +1,8 @@
+{
+    "President": [
+        {"candidate_id": 1, "name": "Alice Johnson"},
+        {"candidate_id": 2, "name": "Bob Smith"},
+        {"candidate_id": 3, "name": "Charlie Brown"},
+        {"candidate_id": 4, "name": "Diana Evans"}
+    ]
+}
