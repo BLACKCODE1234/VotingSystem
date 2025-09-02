@@ -5,6 +5,8 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+votes_file = "votes.json"
+
 # Load users from JSON
 def load_users():
     with open('users.json', 'r') as file:
@@ -12,27 +14,50 @@ def load_users():
 
 # Load votes
 def load_votes():
-    if not os.path.exists('votes.json'):
-        with open('votes.json', 'w') as f:
-            json.dump({"votes": []}, f)
-    with open('votes.json', 'r') as file:
-        return json.load(file)['votes']
+    with open(votes_file, 'r') as file:
+        data = json.load(file)
+        
+        
+    if 'votes' not in data:
+        data['votes'] = 0
+    if 'AVotes' not in data:
+        data['AVotes'] = 0
+    if 'BVotes' not in data:
+        data['BVotes'] = 0
+    # ensure Candidate C count exists
+    if 'CVotes' not in data:
+        data['CVotes'] = 0
+    if 'voters_id' not in data:
+        data['voters_id'] = []
+
+    return data
 
 # Save vote to JSON
 def save_vote(student_id, candidate):
     votes = load_votes()
     # Check if user already voted
-    for vote in votes:
-        if vote['student_id'] == student_id:
-            return False  # Already voted
+    if str(student_id) in [str(voter_id) for voter_id in votes.get('voters_id', [])]:
+        flash('You have already voted.')
+        return False  # Already voted
 
     # Add vote
-    votes.append({
-        "student_id": student_id,
-        "candidate": candidate
-    })
-    with open('votes.json', 'w') as file:
-        json.dump({"votes": votes}, file, indent=4)
+    votes['votes'] += 1
+
+    # Tally candidate-specific vote
+    if candidate == 'Candidate A':
+        votes['AVotes'] += 1
+    elif candidate == 'Candidate B':
+        votes['BVotes'] += 1
+    elif candidate == 'Candidate C':
+        # ensure key exists just in case
+        if 'CVotes' not in votes:
+            votes['CVotes'] = 0
+        votes['CVotes'] += 1
+
+    votes['voters_id'].append(student_id)  # this is to track who voted
+
+    with open(votes_file, 'w') as file:   # save the votes to json file
+        json.dump(votes, file, indent=4)
     return True
 
 # Login page
@@ -64,7 +89,8 @@ def vote(student_id):
 
         success = save_vote(student_id, selected_candidate)
         if success:
-            return render_template('vote_confirmation.html', student_id=student_id, candidate=selected_candidate)
+            flash('Your vote has been recorded. You have been logged out.')
+            return redirect(url_for('login'))
         else:
             flash('You have already voted.')
             return redirect(url_for('vote', student_id=student_id))
@@ -75,6 +101,10 @@ def vote(student_id):
 @app.route('/dashboard/<student_id>')
 def dashboard(student_id):
     return render_template('dashboard.html', student_id=student_id)
+
+
+
+# admin page
 
 if __name__ == '__main__':
     app.run(debug=True)
