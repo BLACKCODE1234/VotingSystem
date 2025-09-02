@@ -1,0 +1,17 @@
+{
+  "voting_summary": {
+    "expected_votes":[200],
+    "vote_count": {
+      "contestant_A_votes": [], 
+      "contestant_B_votes": []
+    },
+    "contestants": {
+      "contestant_A": {
+        "name": "Contestant A"
+      },
+      "contestant_B": {
+        "name": "Contestant B"
+      }
+    }
+  }
+}
