@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Voting System - Page 2{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px;">
+  <div class="card-header bg-primary text-white">
+    <h3 class="mb-0">Additional Information</h3>
+  </div>
+  <div class="card-body">
+    <p>Welcome to Page 2 of the Voting System. Here you can find more details, instructions, or features related to the voting process.</p>
+    <ul>
+      <li>Check your voting eligibility</li>
+      <li>Review candidate profiles</li>
+      <li>Contact support for help</li>
+    </ul>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>
+  </div>
+</div>
+{% endblock %}
