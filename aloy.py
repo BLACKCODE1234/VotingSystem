@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,flash
+from flask import Flask,render_template,request,redirect,url_for,flash,session
 import json
 
 
@@ -24,11 +24,18 @@ def validate_login(student_id,password):
 def home():
     # return render_template('home.html')
     if request.method == 'POST':
-        student_id = int(request.form.get('student_id'))
+        student_id_raw = request.form.get('student_id')
         password = request.form.get('password')
+        print(student_id_raw)
+        try:
+            student_id = int(student_id_raw)
+        except ValueError:
+            flash("Student ID must be a number.")
+            return redirect(url_for('home'))
 
         user = validate_login(student_id,password)
         if user:
+            session['student_id'] = user['student_id']
             if user['student_id'] == 201 and user['password'] == "admin123":
                 return render_template('adminview.html')
             else:
@@ -65,7 +72,7 @@ def has_votes(student_id):
     data = load_votes()
     return student_id in data.get('voted_users',[])   
 
-def add_votes(student_id):
+def add_votes(student_id,candidate):
     data = load_votes()
     
     
@@ -75,8 +82,12 @@ def add_votes(student_id):
     
     
     else:
-        data['votes']['Alice '] += 1
-        data['votes']['Bob '] += 1
+        if candidate == 'Alice':
+            data['votes']['Alice'] += 1
+        if candidate == 'Bob':
+            data['votes']['Bob'] += 1
+            
+        data['total_votes'] += 1
         data['voted_users'].append(student_id)
         save_votes(data)
         return True
@@ -85,8 +96,12 @@ def add_votes(student_id):
     
 @app.route('/vote', methods=['POST'])
 def vote():
-    student_id = int(request.form.get('student_id'))
+    student_id = session.get('student_id')
     candidate = request.form.get('candidate')
+    
+    if not student_id:
+        flash("You must log in first.")
+        return redirect(url_for('home'))
     
     if has_votes(student_id):
         flash("You have already voted.")
@@ -96,7 +111,12 @@ def vote():
         flash("Vote recorded successfully!")
         return redirect(url_for('home'))
     else:
-        return "Error recording vote."
+        flash("Error recording vote.")
+        
+    
+    session.clear()
+    return redirect(url_for('home'))
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
