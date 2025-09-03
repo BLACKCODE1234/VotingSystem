@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0; 
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+        }
+        h1 {
+            color: #2f3640;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            color: #353b48;
+        }
+        /* Add a simple button style */
+        .btn-logout {
+            margin-top: 30px;
+            display: inline-block;
+            background: #e84118;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-logout:hover {
+            background: #c23616;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, Admin!</h1>
+        <p>This is the admin dashboard page.</p>
+        <p>You can view total votes and manage users here.</p>
+
+        <!-- You can add vote counts or admin controls here -->
+
+        <a href="{{ url_for('home') }}" class="btn-logout">Logout</a>
+    </div>
+</body>
+</html>
