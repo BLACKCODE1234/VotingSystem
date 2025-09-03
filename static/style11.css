@@ -1,0 +1,302 @@
+:root {
+    --primary: #df9b4e;
+    --secondary: #1b3c59;
+    --success: #1cc88a;
+    --info: #24626b;
+    --warning: #f6c23e;
+    --danger: #e74a3b;
+    --light: #f8f9fc;
+    --dark: #0c0c0e;
+    --gradient: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    --card-bg: #ffffff;
+    --sidebar-bg: linear-gradient(180deg, #4e73df 0%, #3a56c4 100%);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-gradient);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* Background pattern */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 5% 10%, rgba(78, 115, 223, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 95% 10%, rgba(223, 155, 78, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 50% 90%, rgba(44, 118, 183, 0.05) 0%, transparent 20%);
+    z-index: -1;
+}
+
+/* Card enhancements */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(36, 48, 178, 0.15);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: var(--card-bg);
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+}
+
+.card-header {
+    background: var(--gradient);
+    color: white;
+    border-bottom: none;
+    font-weight: 600;
+}
+
+/* Button enhancements */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+    background: var(--gradient);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(180deg, #922987 10%, #df9b25 100%);
+    transform: translateY(-1px);
+}
+
+/* Form enhancements */
+.form-control {
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d3e2;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    background-color: #fff;
+}
+
+.form-control:focus {
+    border-color: #bac8f3;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Table enhancements */
+.table {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--dark);
+    background-color: rgba(78, 115, 223, 0.1);
+}
+
+.table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Navbar enhancements */
+.navbar {
+    background: var(--gradient);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+/* Hero section */
+.hero-section {
+    background: var(--gradient);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* Candidate cards */
+.candidate-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+    background-color: var(--card-bg);
+}
+
+.candidate-card:hover {
+    transform: translateY(-5px);
+}
+
+.candidate-card.selected {
+    border: 2px solid var(--primary);
+    background-color: rgba(223, 155, 78, 0.1);
+}
+
+/* Progress bars */
+.progress {
+    height: 1rem;
+    border-radius: 0.35rem;
+    background-color: #eaecf4;
+}
+
+.progress-bar {
+    border-radius: 0.35rem;
+}
+
+/* Animation for alerts */
+.alert {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stats cards */
+.stat-card {
+    border-left: 4px solid;
+    background-color: var(--card-bg);
+}
+
+.stat-card.voters {
+    border-left-color: var(--primary);
+    background-color: rgba(223, 155, 78, 0.05);
+}
+
+.stat-card.voted {
+    border-left-color: var(--success);
+    background-color: rgba(28, 200, 138, 0.05);
+}
+
+.stat-card.pending {
+    border-left-color: var(--warning);
+    background-color: rgba(246, 194, 62, 0.05);
+}
+
+/* Login page specific */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--card-bg);
+}
+
+/* Results page specific */
+.result-bar {
+    height: 30px;
+    background-color: #e4e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.result-fill {
+    height: 100%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: white;
+    font-weight: 500;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Sidebar */
+.sidebar {
+    background: var(--sidebar-bg);
+    color: white;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+.footer {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    body::before {
+        background-image: 
+            radial-gradient(circle at 5% 5%, rgba(78, 115, 223, 0.05) 0%, transparent 30%),
+            radial-gradient(circle at 95% 5%, rgba(223, 155, 78, 0.05) 0%, transparent 30%),
+            radial-gradient(circle at 50% 95%, rgba(44, 118, 183, 0.05) 0%, transparent 30%);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        --card-bg: #222831;
+        --light: #393e46;
+    }
+    
+    body {
+        color: #e6e6e6;
+    }
+    
+    .form-control {
+        background-color: #2d4059;
+        border-color: #405275;
+        color: #e6e6e6;
+    }
+    
+    .table {
+        color: #e6e6e6;
+    }
+    
+    .table th {
+        background-color: rgba(78, 115, 223, 0.2);
+    }
+    
+    .table tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+}
