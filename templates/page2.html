@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Vote - Voting System{% endblock %}
+
+{% block content %}
+<h2>Cast Your Vote</h2>
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.student_id.label }}<br/>
+        {{ form.student_id(size=30) }}<br/>
+        {% for error in form.student_id.errors %}
+            <span class="error">{{ error }}</span>
+        {% endfor %}
+    </p>
+
+    <p>
+        {{ form.candidate.label }}<br/>
+        {% for subfield in form.candidate %}
+            <label>{{ subfield() }} {{ subfield.label.text }}</label><br/>
+        {% endfor %}
+        {% for error in form.candidate.errors %}
+            <span class="error">{{ error }}</span>
+        {% endfor %}
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

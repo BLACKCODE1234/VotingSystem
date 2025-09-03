@@ -1,80 +1,95 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
 import json
 import os
+from flask import Flask, render_template, request, redirect, url_for, flash
+
+from flask_wtf import FlaskForm
+from wtforms import RadioField, StringField, SubmitField
+from wtforms.validators import DataRequired, Email
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'your_secret_key_here'  # Replace with your secret key
 
-# Load users from JSON
-def load_users():
-    with open('users.json', 'r') as file:
-        return json.load(file)['credentials']
+# File paths for JSON data files
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+CANDIDATE_FILE = os.path.join(BASE_DIR, 'candidate.json')
+VOTES_FILE = os.path.join(BASE_DIR, 'votes.json')
+STUDENTS_FILE = os.path.join(BASE_DIR, 'students.json')
 
-# Load votes
-def load_votes():
-    if not os.path.exists('votes.json'):
-        with open('votes.json', 'w') as f:
-            json.dump({"votes": []}, f)
-    with open('votes.json', 'r') as file:
-        return json.load(file)['votes']
 
-# Save vote to JSON
-def save_vote(student_id, candidate):
-    votes = load_votes()
-    # Check if user already voted
-    for vote in votes:
-        if vote['student_id'] == student_id:
-            return False  # Already voted
+def load_json(filename):
+    with open(filename, 'r') as f:
+        return json.load(f)
 
-    # Add vote
-    votes.append({
-        "student_id": student_id,
-        "candidate": candidate
-    })
-    with open('votes.json', 'w') as file:
-        json.dump({"votes": votes}, file, indent=4)
-    return True
 
-# Login page
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        input_id = request.form['student_id']
-        input_password = request.form['password']
+def save_json(filename, data):
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=4)
 
-        users = load_users()
 
-        for user in users:
-            if str(user['student_id']) == input_id and user['password'] == input_password:
-                return redirect(url_for('vote', student_id=input_id))
+class VoteForm(FlaskForm):
+    student_id = StringField('Student ID', validators=[DataRequired()])
+    candidate = RadioField('Candidates', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Submit Vote')
 
-        flash('Invalid Student ID or Password.')
-        return redirect(url_for('login'))
 
-    return render_template('login.html')
+@app.route('/')
+def home():
+    candidates = load_json(CANDIDATE_FILE)
+    return render_template('home.html', candidates=candidates)
 
-# Voting page
-@app.route('/vote/<student_id>', methods=['GET', 'POST'])
-def vote(student_id):
-    if request.method == 'POST':
-        selected_candidate = request.form.get('candidate')
-        if not selected_candidate:
-            flash('Please select a candidate.')
-            return redirect(url_for('vote', student_id=student_id))
 
-        success = save_vote(student_id, selected_candidate)
-        if success:
-            return render_template('vote_confirmation.html', student_id=student_id, candidate=selected_candidate)
-        else:
-            flash('You have already voted.')
-            return redirect(url_for('vote', student_id=student_id))
+@app.route('/vote', methods=['GET', 'POST'])
+def vote():
+    candidates = load_json(CANDIDATE_FILE)
+    form = VoteForm()
+    # Populate the radio field choices
+    form.candidate.choices = [(c['id'], c['name']) for c in candidates]
 
-    return render_template('vote.html', student_id=student_id)
+    if form.validate_on_submit():
+        student_id = form.student_id.data.strip()
+        candidate_id = form.candidate.data
 
-# Dashboard (optional)
-@app.route('/dashboard/<student_id>')
-def dashboard(student_id):
-    return render_template('dashboard.html', student_id=student_id)
+        # Validate student exists
+        students = load_json(STUDENTS_FILE)
+        if not any(s['id'] == student_id for s in students):
+            flash("Invalid Student ID. Please enter a valid Student ID.", "danger")
+            return redirect(url_for('vote'))
+
+        # Check if student already voted
+        votes = load_json(VOTES_FILE)
+        if any(v['student_id'] == student_id for v in votes):
+            flash("You have already voted. Multiple voting is not allowed.", "warning")
+            return redirect(url_for('vote'))
+
+        # Record the vote
+        votes.append({"student_id": student_id, "candidate_id": candidate_id})
+        save_json(VOTES_FILE, votes)
+
+        flash("Thank you for voting!", "success")
+        return redirect(url_for('results'))
+
+    return render_template('page2.html', form=form)
+
+
+@app.route('/results')
+def results():
+    candidates = load_json(CANDIDATE_FILE)
+    votes = load_json(VOTES_FILE)
+
+    # Count votes
+    counts = {c['id']: 0 for c in candidates}
+    for v in votes:
+        print(counts)
+        print(v['candidate_id'])
+        if v['candidate_id'] in counts:
+            counts[v['candidate_id']] += 1
+
+    results = []
+    for c in candidates:
+        results.append({'name': c['name'], 'votes': counts[c['id']]})
+
+    return render_template('results.html', results=results)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

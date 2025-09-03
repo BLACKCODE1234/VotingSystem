@@ -1,1 +1,7 @@
 flask 
+Flask==2.3.2
+Flask-WTF==1.1.1
+WTForms==3.0.1
+flask_wtf==1.1.1
+WForms-Validators==3.0.1
+

@@ -1,42 +1,24 @@
 import json
+import os
 
-class VotingCli:
-    def __init__(self):
-        print("Voting CLI initialized")
-        
-    def login(self):
-        with open('students.json','r') as f:
-            data = json.load(f)
-        try:
-            input_id = int(input("Enter student ID: ") )   
-       
-            found = False
-            for student in data['students']:
-                if input_id == student['student_id']:
-                    print("Student Details")
-                    print("---------------")
-                    for idx,value in student.items():
-                        print(f"  {idx}: {value}")
-                        found = True    
-                        
-            if not found:
-                print("Login failed. Student not found.")
-                
-            print()
-        except ValueError:
-            print("Invalid input. Please enter a numeric student ID.")
-            return None
-            
-            
-    def vote(self):
-        if self.login():
-            print("Voting process started...")
-            aspirants  = []            
-            
-    def menu(self):
-        # self.login()
-        self.vote()
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+CANDIDATE_FILE = os.path.join(BASE_DIR, 'candidate.json')
+VOTES_FILE = os.path.join(BASE_DIR, 'votes.json')
+
+
+def main():
+    candidates = json.load(open(CANDIDATE_FILE))
+    votes = json.load(open(VOTES_FILE))
+
+    counts = {c['id']: 0 for c in candidates}
+    for v in votes:
+        if v['candidate_id'] in counts:
+            counts[v['candidate_id']] += 1
+
+    print("Voting Results:")
+    for c in candidates:
+        print(f"{c['name']}: {counts[c['id']]} votes")
+
 
 if __name__ == '__main__':
-    voting = VotingCli()
-    voting.menu()
+    main()
