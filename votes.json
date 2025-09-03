@@ -1,11 +1,11 @@
 {
     "votes": {
-        "Alice ": 0,
-        "Bob ": 0
-        
+        "Alice": 2,
+        "Bob": 0
     },
     "voted_users": [
-        
+        1,
+        34
     ],
-    "total_votes": 0
+    "total_votes": 2
 }
