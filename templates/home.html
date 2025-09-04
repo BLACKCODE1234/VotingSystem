@@ -116,6 +116,20 @@
     <h2>🗳️ CORTEX VOTING APP</h2>
     <p class="tagline">Secure • Fast • Fair</p>
 
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+
+
+
     <form method="POST">
       <label for="student_id">Student ID</label>
       <input type="text" name="student_id" placeholder="Enter your ID" required>

@@ -56,7 +56,7 @@ def home():
 @app.route('/logout')
 def logout():
     session.pop('student_id', None)
-    flash("You have been logged out.")
+    flash("You have successfully voted👌.")
     return redirect(url_for('home'))
 
 
@@ -133,7 +133,7 @@ def vote():
         return redirect(url_for('home'))
     
     if has_votes(student_id):
-        flash("You have already voted.")
+        flash("Thank You👍")
         return redirect(url_for('logout'))
 
     elif add_votes(student_id, candidate):
