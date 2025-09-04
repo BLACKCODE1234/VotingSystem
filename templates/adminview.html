@@ -1,59 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            margin: 0; 
-            padding: 20px;
-        }
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-        }
-        h1 {
-            color: #2f3640;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 18px;
-            color: #353b48;
-        }
-        /* Add a simple button style */
-        .btn-logout {
-            margin-top: 30px;
-            display: inline-block;
-            background: #e84118;
-            color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn-logout:hover {
-            background: #c23616;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Admin - Voting Results</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2575fc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      background: #2575fc;
+      color: white;
+      padding: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      padding: 12px;
+      text-align: center;
+      background: #f9f9f9;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) td {
+      background: #eef3ff;
+    }
+
+    .total {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .logout {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .logout a {
+      background: #ff4b5c;
+      color: white;
+      padding: 12px 25px;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .logout a:hover {
+      background: #d90429;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome, Admin!</h1>
-        <p>This is the admin dashboard page.</p>
-        <p>You can view total votes and manage users here.</p>
+  <div class="container">
+    <h2>📊 Voting Results</h2>
 
-        <!-- You can add vote counts or admin controls here -->
+    <table>
+      <tr>
+        <th>Candidate</th>
+        <th>Votes</th>
+      </tr>
+      {% for candidate, count in votes.items() %}
+      <tr>
+        <td>{{ candidate }}</td>
+        <td>{{ count }}</td>
+      </tr>
+      {% endfor %}
+    </table>
 
-        <a href="{{ url_for('home') }}" class="btn-logout">Logout</a>
+    <div class="total">
+      Total Votes Cast: {{ total_votes }}
     </div>
+
+    <div class="logout">
+      <a href="{{ url_for('logout') }}">🚪 Logout</a>
+    </div>
+  </div>
 </body>
 </html>
