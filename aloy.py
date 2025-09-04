@@ -1,23 +1,42 @@
 from flask import Flask,render_template,request,redirect,url_for,flash,session
-import json
+import os 
+import dotenv
+from pymongo import MongoClient
 
 
 app = Flask(__name__)
 
 app.secret_key = 'your_secret_key'  
 
-users = 'users.json'
-VOTES_FILE = 'votes.json'
 
-with open(users,'r') as f:
-    users_data = json.load(f)
-def validate_login(student_id,password):
-    for user in users_data['userdetails']:
-        if user['student_id'] == student_id and user['password'] == password:
+dotenv.load_dotenv()
+
+mongodb_username = os.getenv("MONGODB_USERNAME", "default_username")
+mongodb_password = os.getenv("MONGODB_PASSWORD", "default_password")
+mongodb_url = os.getenv("MONGODB_url", "default_url")
+
+
+try:
+    client = MongoClient(mongodb_url)
+    db = client[os.getenv("MONGODB_DATABASE", "default_db")]
+    print("working")
+except ValueError as e:
+    print("not working")
+
+users_col = db["users"]
+students_col = db["students"]
+candidates_col = db["candidates"]
+votes_col = db["votes"]
+
+
+def validate_login(student_id, password):
+    user_doc = users_col.find_one()
+    if not user_doc:
+        return False
+    for user in user_doc.get("userdetails", []):
+        if user["student_id"] == student_id and user["password"] == password:
             return user
     return False
-
-
 
 
 @app.route('/',methods=['GET','POST'])
@@ -74,53 +93,62 @@ def admin_view():
         flash("Access denied. Admins only.")
         return redirect(url_for('home'))
     
-    data = load_votes()
-    votes = data['votes']
-    total_votes = data['total_votes']
+    data = get_vote_data()
+    votes = data.get('votes',{})
+    total_votes = data.get('total_votes',0)
     return render_template('adminview.html', votes=votes, total_votes=total_votes)
 
 
 
 
 
-def load_votes():
-    with open(VOTES_FILE, 'r') as f:
-        return json.load(f)
-    
+def get_vote_data():
+    vote_doc = votes_col.find_one()
+    if not vote_doc:
+        vote_doc = {
+            "votes": {"Alice": 0, "Bob": 0},
+            "voted_users": [],
+            "total_votes": 0
+        }
+        votes_col.insert_one(vote_doc)
+    return vote_doc
 
-def has_votes(student_id):
-    data = load_votes()
-    return student_id in data.get('voted_users',[]) 
+
+def save_vote_data(data):
+    votes_col.update_one({}, {"$set": {
+    "votes": data["votes"],
+    "voted_users": data["voted_users"],
+    "total_votes": data["total_votes"]
+}}, upsert=True)
 
 
-def save_votes(data):
-    with open(VOTES_FILE,'w') as f:
-        json.dump(data,f,indent=4)
-        
-      
 
-def add_votes(student_id,candidate):
-    data = load_votes()
-    
-    
+def has_voted(student_id):
+    data = get_vote_data()
+    return student_id in data.get("voted_users", [])
 
-        
-    if student_id in data['voted_users']:
+
+def add_vote(student_id, candidate):
+    data = get_vote_data()
+
+    if has_voted(student_id):
         return False
-    
+
     candidate = candidate.strip()
-    
-    if candidate == 'Alice':
-        data['votes']['Alice'] += 1
-    if candidate == 'Bob':
-        data['votes']['Bob'] += 1
-        
-    data['total_votes'] += 1
-    data['voted_users'].append(student_id)
-        
-    save_votes(data)
+    if candidate not in data["votes"]:
+        return False
+
+    data["votes"][candidate] += 1
+    data["total_votes"] += 1
+    data["voted_users"].append(student_id)
+
+    save_vote_data(data)
     return True
-        
+
+
+
+
+
         
     
 @app.route('/vote', methods=['POST'])
@@ -132,11 +160,11 @@ def vote():
         flash("You must log in first.")
         return redirect(url_for('home'))
     
-    if has_votes(student_id):
+    if has_voted(student_id):
         flash("Thank You👍")
         return redirect(url_for('logout'))
 
-    elif add_votes(student_id, candidate):
+    elif add_vote(student_id, candidate):
         flash("Vote recorded successfully!")
         # return redirect(url_for('home'))
     else:
