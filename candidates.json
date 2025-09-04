@@ -1,7 +1,0 @@
-{
-    "President": [
-        {"candidate_id": 1, "name": "Alice"},
-        {"candidate_id": 2, "name": "Bob Smith"}
-    
-    ]
-}
